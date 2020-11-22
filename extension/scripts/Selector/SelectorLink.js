@@ -39,10 +39,27 @@ var SelectorLink = {
 				var deferredData = $.Deferred();
 
 				var data = {};
-				data[this.id] = $(element).text();
-				data._followSelectorId = this.id;
-				data[this.id + '-href'] = element.href;
-				data._follow = element.href;
+
+				if (this.regex !== undefined && this.regex.length) {
+					var matches = element.href.match(new RegExp(this.regex));
+
+					if (matches !== null) {
+						data[this.id] = $(element).text();
+						data._followSelectorId = this.id;
+						data[this.id + '-href'] = matches[0];
+						data._follow = element.href;
+					}
+					else {
+						data = undefined;
+					}
+				} else {
+					data[this.id] = $(element).text();
+					data._followSelectorId = this.id;
+					data[this.id + '-href'] = element.href;
+					data._follow = element.href;
+				}
+
+
 				deferredData.resolve(data);
 
 				return deferredData;
@@ -65,7 +82,7 @@ var SelectorLink = {
 	},
 
 	getFeatures: function () {
-		return ['multiple', 'delay']
+		return ['multiple', 'regex', 'delay']
 	},
 
 	getItemCSSSelector: function() {
